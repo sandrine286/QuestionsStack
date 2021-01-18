@@ -24,6 +24,7 @@ def corpus_tokenizer(corpora):
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--text", help="""Texte de la question Stack Overflow à passer""")
+    parser.add_argument("-e", "--extension", help="""Type de modèle à test. Is it a REG ou an LDA?""")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -35,15 +36,33 @@ if __name__ == '__main__':
     # Chargement des fichiers données + modèle + fonction de normalisation
     ###
 
-    vect = pickle.load(open('data/vectorizer.pkl', 'rb'))
-    tdidf = pickle.load(open('data/tdidf.pkl', 'rb'))
-    lda = pickle.load(open('data/lda18.pkl', 'rb'))
+    if args.extension == 'REG':
+        print("Regression logistique")
+        vect = pickle.load(open('data/vectorizerFiltre.pkl', 'rb'))
+        tdidf = pickle.load(open('data/tdidfFilter.pkl', 'rb'))
+        reg = pickle.load(open('data/supervise_model.sav', 'rb'))
+        listLabel = pd.read_csv("data/listLabel.csv", sep=";")
+    else:
+        print("LDA")
+        vect = pickle.load(open('data/vectorizer.pkl', 'rb'))
+        tdidf = pickle.load(open('data/tdidf.pkl', 'rb'))
+        lda = pickle.load(open('data/lda18.pkl', 'rb'))
 
     ###
     # création de la matrice creuse tdidf et prédiction du modèle LDA
     ###
-    X_test = vect.transform(pd.DataFrame(data=[str],columns=['corpus']))
+    X_test = vect.transform(pd.DataFrame(data=[str], columns=['corpus']))
     X_test_tfidf = tdidf.transform(X_test)
-    res = lda.transform(X_test_tfidf)
-    max_index_col = np.argmax(res)+1
-    print("La question appartient au Topic", max_index_col)
+
+    ###
+    # test modèle
+    ###
+    if args.extension == 'REG':
+        y_pred = reg.predict(X_test_tfidf)
+        tag_name = listLabel[listLabel["target_id"]
+                             == y_pred[0]]['target_name'].values
+        print("Le tag de la question est ", tag_name)
+    else:
+        res = lda.transform(X_test_tfidf)
+        max_index_col = np.argmax(res)+1
+        print("La question appartient au Topic", max_index_col)

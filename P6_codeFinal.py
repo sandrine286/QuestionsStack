@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn import decomposition
+from sklearn import preprocessing
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.decomposition import LatentDirichletAllocation
 import nltk
@@ -35,18 +37,16 @@ if __name__ == '__main__':
     ###
     # Chargement des fichiers données + modèle + fonction de normalisation
     ###
-
+    vect = pickle.load(open('data/vectorizerComplet.pkl', 'rb'))
+    tdidf = pickle.load(open('data/tdidf.pkl', 'rb'))
     if args.extension == 'REG':
         print("Regression logistique")
-        vect = pickle.load(open('data/vectorizerFiltre.pkl', 'rb'))
-        tdidf = pickle.load(open('data/tdidfFilter.pkl', 'rb'))
+        svd = pickle.load(open('data/SVD.pkl', 'rb'))
         reg = pickle.load(open('data/supervise_model.sav', 'rb'))
         listLabel = pd.read_csv("data/listLabel.csv", sep=";")
     else:
-        print("LDA")
-        vect = pickle.load(open('data/vectorizer.pkl', 'rb'))
-        tdidf = pickle.load(open('data/tdidf.pkl', 'rb'))
-        lda = pickle.load(open('data/lda18.pkl', 'rb'))
+        print("LDA")        
+        lda = pickle.load(open('data/lda_model.sav', 'rb'))
 
     ###
     # création de la matrice creuse tdidf et prédiction du modèle LDA
@@ -58,6 +58,7 @@ if __name__ == '__main__':
     # test modèle
     ###
     if args.extension == 'REG':
+        X_test_tfidf = svd.transform(X_test_tfidf)
         y_pred = reg.predict(X_test_tfidf)
         tag_name = listLabel[listLabel["target_id"]
                              == y_pred[0]]['target_name'].values

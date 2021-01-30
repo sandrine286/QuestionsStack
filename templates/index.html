@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Bootstrap Core CSS -->
+    <!-- Custom CSS -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Questions</title>
+
+
+ </head>
+
+<header>
+	<h1>API de test : catégoriser les questions</h1>  
+</header>
+<body>
+
+
+<form class="form-inline" method="POST">
+<table>
+<div class="form-group">
+<tr><td class="input-group-addon">Choix model :&nbsp</td>
+<tr>
+	{% if model == "REG" %} 
+        	<td>
+		<input checked type="radio" id="REG" name="model" value="REG"><label for="REG">REG</label>
+		<input type="radio" id="LDA" name="model" value="LDA"><label for="LDA">LDA</label>
+		</td>
+        {% else %}        
+               <td>
+		<input type="radio" id="REG" name="model" value="REG"><label for="REG">REG</label>
+		<input checked type="radio" id="LDA" name="model" value="LDA"><label for="LDA">LDA</label>
+		</td>
+	{% endif %}
+</tr>
+<tr>
+	<td><label for="question">Votre question :<mark>{{ msg }}</mark></label></td></tr>
+    <tr><td><textarea id="question" name="question" rows="10" cols="50">{{question}}</textarea></td>
+    </tr>
+</tr>
+<tr>
+<td>
+<input type="submit" value="Submit">
+</td>
+</tr>
+<tr>
+</tr>
+<tr>&nbsp
+</tr>
+</table>
+<hr>
+<table>
+<tr>&nbsp
+</tr>
+<tr>
+<td><font size=5 color="#0000FF">{{tag}}</font></td>
+</tr>
+</table>
+</form>
+
+
+</body>
+</html>
